@@ -46,4 +46,26 @@ class UserController extends Controller
             'token' => $token,
         ]);
     }
+
+    public function logout(Request $request)
+    {
+        // Revoke the token that was used to authenticate the current request
+        $request->user()->currentAccessToken()->delete();
+
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Logged out successfully',
+        ]);
+    }
+
+    // public function logoutAll(Request $request)
+    // {
+    //     $request->user()->tokens()->delete();
+
+    //     return response()->json([
+    //         'status' => 'success',
+    //         'message' => 'Logged out from all devices',
+    //     ]);
+    // }
+
 }
