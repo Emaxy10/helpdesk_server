@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use Exception;
 use Illuminate\Http\Request;
 use App\Models\User;
 use Illuminate\Support\Facades\Hash;
@@ -12,23 +13,30 @@ class UserController extends Controller
     //
 
       public function register(Request $request)
-    {
-        $request->validate([
-            "name"=> "required|string",
-            "email"=> "required|email|unique:users,email",
-            "password" => 'required|min:8|regex:/[A-Za-z]/|regex:/[0-9]/',  // Password validation
-        ]);
+        {
+            try{
+            $request->validate([
+                "name"=> "required|string",
+                "email"=> "required|email|unique:users,email",
+                "password" => 'required|min:8|regex:/[A-Za-z]/|regex:/[0-9]/',  // Password validation
+            ]);
 
-        $user = User::create([
-            'name'=> $request->name,
-            'email'=> $request->email,
-            'password'=> $request->password
-        ]);
+            $user = User::create([
+                'name'=> $request->name,
+                'email'=> $request->email,
+                'password'=> $request->password
+            ]);
 
-        return response()->json([
-            'message' => 'Registered successfully',
-            'user' => $user,
-        ], 201);
+            return response()->json([
+                'message' => 'Registered successfully',
+                'user' => $user,
+            ], 201);
+        } catch(Exception $e){
+            return response()->json([
+                'message' => 'An error Ocuured. Try again later',
+                'error' => $e->getMessage()
+            ], 500);
+        }
     }
 
     public function login(Request $request){
@@ -67,5 +75,22 @@ class UserController extends Controller
     //         'message' => 'Logged out from all devices',
     //     ]);
     // }
+
+
+    public function agents(){
+        try{
+             $agents = User::whereHas('roles', function ($query) {
+            $query->where('name', 'agent');
+            })->get();
+
+            return response()->json($agents);
+        }catch(Exception $e){
+            return response()->json([
+                'message' => 'An error Ocuured. Try again later',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+      
+    }
 
 }

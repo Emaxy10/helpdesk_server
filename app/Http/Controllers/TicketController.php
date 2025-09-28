@@ -22,7 +22,7 @@ class TicketController extends Controller
     public function update(UpdateTicketRequest $request, Ticket $ticket)
     {
         try {
-            // Update ticket fields
+            // Update ticket 
             $ticket->update($request->validated());
 
             return response()->json([

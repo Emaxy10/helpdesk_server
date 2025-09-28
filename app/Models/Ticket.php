@@ -15,4 +15,12 @@ class Ticket extends Model
         'user_id',
         'assigned_to'
     ];
+
+    public function creator() {
+        return $this->belongsTo(User::class, 'user_id');
+    }
+
+    public function agent() {
+        return $this->belongsTo(User::class, 'assigned_to');
+    }
 }

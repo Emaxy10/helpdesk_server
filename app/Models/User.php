@@ -61,4 +61,12 @@ class User extends Authenticatable
 
         return false;
     }
+
+    public function createdTickets() {
+        return $this->hasMany(Ticket::class, 'user_id');
+    }
+
+    public function assignedTickets() {
+        return $this->hasMany(Ticket::class, 'assigned_to');
+    }
 }
