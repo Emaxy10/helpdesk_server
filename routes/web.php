@@ -8,6 +8,8 @@ use App\Http\Controllers\UserController;
 // Route::get('/user', function (Request $request) {
 //     return $request->user();
 // })->middleware('auth:sanctum');
+// app/Http/Middleware/VerifyCsrfToken.php
+
 
 Route::post('/register', [UserController::class, 'register']);
 Route::post('/login', [UserController::class, 'login']);
@@ -15,7 +17,7 @@ Route::post('/logout', [UserController::class, 'logout'])->middleware('auth:sanc
 Route::get('/agent', [UserController::class, 'agents']);
 
 Route::get('/ticket', [TicketController::class, 'index']);
-Route::post('/ticket/create', [TicketController::class, 'store']);
+Route::post('/ticket/create', [TicketController::class, 'store'])->middleware('auth:sanctum');
 Route::patch('/ticket/{ticket}/update', [TicketController::class, 'update']);
 Route::get('/ticket/{ticket}', [TicketController::class, 'show']);
 

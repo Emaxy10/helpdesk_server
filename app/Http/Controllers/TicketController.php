@@ -5,19 +5,32 @@ namespace App\Http\Controllers;
 use App\Http\Requests\StoreTicketRequest;
 use App\Http\Requests\UpdateTicketRequest;
 use App\Models\Ticket;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
+
 
 class TicketController extends Controller
 {
     //
-    public function store(StoreTicketRequest $request){
-        $ticket = Ticket::create($request->all());
+  public function store(StoreTicketRequest $request)
+{
+    $user_id = Auth::id();
 
-        return response()->json([
-            'ticket' => $ticket,
-            'message' => 'Ticket created succesfully'
-        ]);
-    }
+    $ticket = Ticket::create([
+        'title'       => $request->title,
+        'description' => $request->description,
+        'status'      => $request->status ?? 'open',
+        'priority'    => $request->priority,
+        'user_id'     => $user_id,
+        'assigned_to' => $request->assigned_to,
+    ]);
+
+    return response()->json([
+        'ticket'  => $ticket,
+        'message' => 'Ticket created successfully'
+    ], 201);
+}
+
 
     public function update(UpdateTicketRequest $request, Ticket $ticket)
     {
