@@ -26,8 +26,8 @@ class StoreTicketRequest extends FormRequest
             'description' => ['nullable', 'string'],
             'status'      => ['required', 'in:open,in-progress,resolved,closed'],
             'priority'    => ['required', 'in:low,medium,high'],
-            'user_id'     => ['required', 'exists:users,id'],
-            'assigned_to' => ['nullable', 'exists:users,id'],
+            'user_id'     => ['nullable', 'exists:users,id'],
+            'assigned_to' => ['required', 'exists:users,id'],
         ];
     }
 }

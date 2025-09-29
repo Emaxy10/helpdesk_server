@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use App\Models\User;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\ValidationException;
+use Illuminate\Support\Facades\Auth;
 
 class UserController extends Controller
 {
@@ -39,32 +40,47 @@ class UserController extends Controller
         }
     }
 
-    public function login(Request $request){
-        $request->validate([
-            'email'=> 'required|email',
-            'password'=> 'required',
-        ]);
-
-        $user = User::where('email', $request->email)->first();
-
-        $token = $user->createToken('api-token')->plainTextToken;
-
-        return response()->json([
-            'message' => 'Login successful',
-            'token' => $token,
-        ]);
-    }
-
-    public function logout(Request $request)
+  public function login(Request $request)
     {
-        // Revoke the token that was used to authenticate the current request
-        $request->user()->currentAccessToken()->delete();
+        $request->validate([
+            'email' => 'required|email',
+            'password' => 'required',
+        ]);
+
+        // Use Auth::attempt for session-based login
+        if (Auth::attempt($request->only('email', 'password'))) {
+            $request->session()->regenerate(); // Important for session security
+            
+            return response()->json([
+                'message' => 'Login successful',
+                'user' => Auth::user(),
+            ]);
+        }
 
         return response()->json([
-            'status' => 'success',
-            'message' => 'Logged out successfully',
-        ]);
+            'message' => 'The provided credentials do not match our records.'
+        ], 401);
     }
+
+     public function logout(Request $request)
+    {
+        Auth::guard('web')->logout();
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
+
+        return response()->json(['message' => 'Logged out successfully']);
+    }
+
+    // public function logout(Request $request)
+    // {
+    //     // Revoke the token that was used to authenticate the current request
+    //     $request->user()->currentAccessToken()->delete();
+
+    //     return response()->json([
+    //         'status' => 'success',
+    //         'message' => 'Logged out successfully',
+    //     ]);
+    // }
 
     // public function logoutAll(Request $request)
     // {
