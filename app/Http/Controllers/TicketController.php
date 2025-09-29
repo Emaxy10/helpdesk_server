@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\StoreTicketRequest;
 use App\Http\Requests\UpdateTicketRequest;
 use App\Models\Ticket;
+use Exception;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
 
@@ -57,7 +58,7 @@ class TicketController extends Controller
 
 
     public function index(){
-        $tickets = Ticket::all();
+     $tickets = Ticket::with('creator')->get();
 
         return response()->json(
             $tickets
@@ -65,7 +66,15 @@ class TicketController extends Controller
     }
 
     public function destroy(Ticket $ticket){
-         $ticket->delete();
+        try{
+             $ticket->delete();
         return response()->json(['message' => 'ticket deleted successfully']);
+        }catch(Exception $e){
+            return response()->json([
+                'message' => 'Failed to delete ticket',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+        
     }
 }
