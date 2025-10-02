@@ -27,4 +27,5 @@ Route::middleware('web')->group(function () {
     Route::patch('/ticket/{ticket}/update', [TicketController::class, 'update']);
     Route::get('/ticket/{ticket}', [TicketController::class, 'show']);
     Route::delete('/ticket/{ticket}', [TicketController::class, 'destroy'])->middleware('auth:sanctum');
+    Route::patch('/ticket/{ticket}/accept', [TicketController::class, 'accept']);
 });

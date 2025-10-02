@@ -64,6 +64,24 @@ class TicketController extends Controller
             $tickets
         );
     }
+ 
+   public function accept(Ticket $ticket, Request $request)
+{
+    $request->validate([
+    'close_date' => 'required|date|after_or_equal:now',
+    ]);
+
+
+    $ticket->update([
+        'is_accepted' => 1,
+        'close_date' => $request->input('close_date'), // full timestamp
+    ]);
+
+    return response()->json([
+        'message' => 'Ticket accepted successfully',
+        'ticket'  => $ticket,
+    ]);
+}
 
     public function destroy(Ticket $ticket){
         try{
