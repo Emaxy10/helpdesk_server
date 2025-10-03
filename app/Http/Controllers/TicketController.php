@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\StoreTicketRequest;
 use App\Http\Requests\UpdateTicketRequest;
 use App\Models\Ticket;
+use App\Models\User;
 use Exception;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
@@ -74,6 +75,7 @@ class TicketController extends Controller
 
     $ticket->update([
         'is_accepted' => 1,
+        'status' => 'in-progress',
         'close_date' => $request->input('close_date'), // full timestamp
     ]);
 
@@ -81,7 +83,19 @@ class TicketController extends Controller
         'message' => 'Ticket accepted successfully',
         'ticket'  => $ticket,
     ]);
-}
+    }
+
+
+    public function myTickets(){
+        $user = Auth::user();
+        $tickets = $user->createdTickets()->with('agent')->get();
+
+        return response()->json($tickets);
+
+        
+
+
+    }
 
     public function destroy(Ticket $ticket){
         try{

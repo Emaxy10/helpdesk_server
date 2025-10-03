@@ -21,6 +21,7 @@ Route::middleware('web')->group(function () {
     })->middleware('auth:sanctum');
 
     Route::get('/agent', [UserController::class, 'agents']);
+    Route::get('/ticket/my', [TicketController::class, 'myTickets'])->middleware('auth:sanctum');
 
     Route::get('/ticket', [TicketController::class, 'index']);
     Route::post('/ticket/create', [TicketController::class, 'store'])->middleware('auth:sanctum');
