@@ -92,9 +92,6 @@ class TicketController extends Controller
 
         return response()->json($tickets);
 
-        
-
-
     }
 
     public function destroy(Ticket $ticket){
