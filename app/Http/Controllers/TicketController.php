@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\StoreTicketRequest;
 use App\Http\Requests\UpdateTicketRequest;
 use App\Models\Ticket;
+use App\Models\TicketComment;
 use App\Models\User;
 use Exception;
 use Illuminate\Support\Facades\Auth;
@@ -93,6 +94,38 @@ class TicketController extends Controller
         return response()->json($tickets);
 
     }
+
+   public function storeComments(Request $request, Ticket $ticket)
+{
+    $validated = $request->validate([
+        'comment' => 'required|string|max:1000',
+    ]);
+
+    $comment = TicketComment::create([
+        'ticket_id' => $ticket->id,
+        'user_id' => auth()->id(),
+        'comment'  => $validated['comment'],
+    ]);
+
+    
+    // Load the user before returning
+    $comment->load('user');
+
+    return response()->json([
+        'message' => 'Comment added successfully',
+        'comment' => $comment,
+    ], 201);
+}
+
+public function getComments(Ticket $ticket){
+   $ticket->load('comments.user'); // loads comments with user info
+
+    return response()->json([
+        'ticket' => $ticket,
+        'comments' => $ticket->comments,
+    ]);
+}
+
 
     public function destroy(Ticket $ticket){
         try{
