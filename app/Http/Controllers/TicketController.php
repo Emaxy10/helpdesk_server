@@ -60,7 +60,7 @@ class TicketController extends Controller
 
 
     public function index(){
-     $tickets = Ticket::with('creator')->get();
+     $tickets = Ticket::with('creator')->with('agent')->get();
 
         return response()->json(
             $tickets
@@ -95,41 +95,41 @@ class TicketController extends Controller
 
     }
 
-   public function storeComments(Request $request, Ticket $ticket)
-{
-    $validated = $request->validate([
-        'comment' => 'required|string|max:1000',
-    ]);
+    public function storeComments(Request $request, Ticket $ticket)
+    {
+        $validated = $request->validate([
+            'comment' => 'required|string|max:1000',
+        ]);
 
-    $comment = TicketComment::create([
-        'ticket_id' => $ticket->id,
-        'user_id' => auth()->id(),
-        'comment'  => $validated['comment'],
-    ]);
+        $comment = TicketComment::create([
+            'ticket_id' => $ticket->id,
+            'user_id' => auth()->id(),
+            'comment'  => $validated['comment'],
+        ]);
 
-    
-    // Load the user before returning
-    $comment->load('user');
+        
+        // Load the user before returning
+        $comment->load('user');
 
-    return response()->json([
-        'message' => 'Comment added successfully',
-        'comment' => $comment,
-    ], 201);
-}
+        return response()->json([
+            'message' => 'Comment added successfully',
+            'comment' => $comment,
+        ], 201);
+    }
 
-public function getComments(Ticket $ticket){
-   $ticket->load('comments.user'); // loads comments with user info
+    public function getComments(Ticket $ticket){
+    $ticket->load('comments.user'); // loads comments with user info
 
-    return response()->json([
-        'ticket' => $ticket,
-        'comments' => $ticket->comments,
-    ]);
-}
+        return response()->json([
+            'ticket' => $ticket,
+            'comments' => $ticket->comments,
+        ]);
+    }
 
 
     public function destroy(Ticket $ticket){
         try{
-             $ticket->delete();
+                $ticket->delete();
         return response()->json(['message' => 'ticket deleted successfully']);
         }catch(Exception $e){
             return response()->json([
@@ -139,4 +139,20 @@ public function getComments(Ticket $ticket){
         }
         
     }
+
+    public function transfer(Ticket $ticket, Request $request){
+         $request->validate([
+            'assigned_to' => 'required|exists:users,id',
+        ]);
+
+        $ticket->update([
+            'assigned_to' => $request->input('assigned_to')
+        ]);
+
+         return response()->json([
+            'message' => 'Ticket transfered successfully',
+        ]);
+    }
+
+
 }
