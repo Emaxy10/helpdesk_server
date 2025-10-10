@@ -4,9 +4,11 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreTicketRequest;
 use App\Http\Requests\UpdateTicketRequest;
+use App\Mail\TicketCreated;
 use App\Models\Ticket;
 use App\Models\TicketComment;
 use App\Models\User;
+use Mail;
 use Exception;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
@@ -17,16 +19,21 @@ class TicketController extends Controller
     //
   public function store(StoreTicketRequest $request)
 {
-    $user_id = Auth::id();
+    $user = Auth::user();
 
     $ticket = Ticket::create([
         'title'       => $request->title,
         'description' => $request->description,
         'status'      => $request->status ?? 'open',
         'priority'    => $request->priority,
-        'user_id'     => $user_id,
+        'user_id'     => $user->id,
         'assigned_to' => $request->assigned_to,
     ]);
+
+    //Send Mail
+    Mail::to($user)->send(
+        new TicketCreated()
+    );
 
     return response()->json([
         'ticket'  => $ticket,

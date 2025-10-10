@@ -2,8 +2,23 @@
 
 use App\Http\Controllers\TicketController;
 use App\Http\Controllers\UserController;
+use App\Mail\TicketCreated;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Http\Request;
+
+//Mail
+
+Route::get('/test', function(){
+    // return new TicketCreated(); -> See the message in the mail
+
+
+    // Mail::to('chigozieiroawula@outlook.com')->send(
+    //     new TicketCreated()
+    // );-> Send message with mail::to
+
+    // return 'done';
+
+});
 
 // CSRF protection
 Route::get('/sanctum/csrf-cookie', function (Request $request) {
@@ -16,7 +31,7 @@ Route::middleware('web')->group(function () {
     Route::post('/login', [UserController::class, 'login']);
     Route::post('/logout', [UserController::class, 'logout'])->middleware('auth:sanctum');
 
-    Route::get('/user', function (\Illuminate\Http\Request $request) {
+    Route::get('/user', function (Request $request) {
         return $request->user();
     })->middleware('auth:sanctum');
 
