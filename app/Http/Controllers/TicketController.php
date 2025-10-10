@@ -32,7 +32,7 @@ class TicketController extends Controller
 
     //Send Mail
     Mail::to($user)->send(
-        new TicketCreated()
+        new TicketCreated($ticket)
     );
 
     return response()->json([
