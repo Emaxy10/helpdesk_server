@@ -47,6 +47,7 @@ Route::middleware('web')->group(function () {
     Route::get('/tickets/{ticket}/comments', [TicketController::class, 'getComments'])->middleware('auth:sanctum');
     Route::post('/tickets/{ticket}/comments', [TicketController::class, 'storeComments'])->middleware('auth:sanctum');
     Route::patch('/ticket/{ticket}/transfer', [TicketController::class, 'transfer'])->middleware('auth:sanctum');
+    Route::patch('/ticket/{ticket}/close', [TicketController::class, 'close'])->middleware('auth:sanctum');
 
     
 });

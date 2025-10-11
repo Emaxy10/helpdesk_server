@@ -53,7 +53,7 @@ class TicketController extends Controller
                 'ticket' => $ticket
             ], 200);
 
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return response()->json([
                 'message' => 'Failed to update ticket',
                 'error' => $e->getMessage()
@@ -80,17 +80,34 @@ class TicketController extends Controller
     'close_date' => 'required|date|after_or_equal:now',
     ]);
 
+    $user = Auth::user();
 
-    $ticket->update([
-        'is_accepted' => 1,
-        'status' => 'in-progress',
-        'close_date' => $request->input('close_date'), // full timestamp
-    ]);
+    try{
 
-    return response()->json([
-        'message' => 'Ticket accepted successfully',
-        'ticket'  => $ticket,
-    ]);
+        if($ticket->agent->id !== $user->id){
+            return response()->json([
+            'message' => 'Unauthorized: Only the assigned agent can accept this ticket.'
+        ], 403);
+        }
+        
+        $ticket->update([
+            'is_accepted' => 1,
+            'status' => 'in-progress',
+            'close_date' => $request->input('close_date'), // full timestamp
+        ]);
+
+        return response()->json([
+            'message' => 'Ticket accepted successfully',
+            'ticket'  => $ticket,
+        ]);
+
+    }catch(Exception $e){
+         return response()->json([
+                'message' => 'Failed to accept ticket',
+                'error' => $e->getMessage()
+            ], 500);
+    }
+
     }
 
 
@@ -148,17 +165,65 @@ class TicketController extends Controller
     }
 
     public function transfer(Ticket $ticket, Request $request){
+
+        $user = Auth::user();
+
          $request->validate([
             'assigned_to' => 'required|exists:users,id',
         ]);
 
-        $ticket->update([
-            'assigned_to' => $request->input('assigned_to')
-        ]);
+        try{
 
-         return response()->json([
-            'message' => 'Ticket transfered successfully',
-        ]);
+             if($ticket->agent->id !== $user->id){
+                return response()->json([
+                'message' => 'Unauthorized: Only the assigned agent can close this ticket.'
+            ], 403);
+            }
+
+                $ticket->update([
+                'assigned_to' => $request->input('assigned_to')
+            ]);
+
+            return response()->json([
+                'message' => 'Ticket transfered successfully',
+            ]);
+        }catch(Exception $e){
+            return response()->json([
+                'message' => 'Failed to transfer ticket',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+
+        
+    }
+
+    public function close(Ticket $ticket){
+        $user = Auth::user();
+        try{
+
+            if($ticket->agent->id !== $user->id){
+                return response()->json([
+                'message' => 'Unauthorized: Only the assigned agent can close this ticket.'
+            ], 403);
+            }
+
+            if($ticket->is_accepted === null){
+                 return response()->json([
+                'message' => 'Fail: Only the accepted ticket can be closed.'
+                ], 403);
+            }
+
+            $ticket->update([
+                'is_completed' => 1,
+                'status' => 'closed'
+            ]);
+
+        }catch(Exception $e){
+             return response()->json([
+                'message' => 'Failed to close ticket',
+                'error' => $e->getMessage()
+            ], 500);
+        }
     }
 
 

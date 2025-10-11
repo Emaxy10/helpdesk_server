@@ -15,7 +15,8 @@ class Ticket extends Model
         'user_id',
         'assigned_to',
         'is_accepted',
-        'close_date'
+        'close_date',
+        'is_completed'
     ];
 
     public function creator() {
