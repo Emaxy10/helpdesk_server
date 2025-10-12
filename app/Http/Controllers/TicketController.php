@@ -77,7 +77,7 @@ class TicketController extends Controller
    public function accept(Ticket $ticket, Request $request)
 {
     $request->validate([
-    'close_date' => 'required|date|after_or_equal:now',
+    'close_date' => 'required|date',
     ]);
 
     $user = Auth::user();
