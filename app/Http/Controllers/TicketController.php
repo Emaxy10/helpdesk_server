@@ -21,6 +21,14 @@ class TicketController extends Controller
 {
     $user = Auth::user();
 
+    $paths = [];
+
+    if ($request->hasFile('attachments')) {
+        foreach ($request->file('attachments') as $file) {
+            $paths[] = $file->store('attachments', 'public');
+        }
+    }
+
     $ticket = Ticket::create([
         'title'       => $request->title,
         'description' => $request->description,
@@ -28,6 +36,7 @@ class TicketController extends Controller
         'priority'    => $request->priority,
         'user_id'     => $user->id,
         'assigned_to' => $request->assigned_to,
+        'attachment' => $paths ? json_encode($paths) : null,
     ]);
 
     //Send Mail

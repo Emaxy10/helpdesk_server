@@ -28,6 +28,7 @@ class StoreTicketRequest extends FormRequest
             'priority'    => ['required', 'in:low,medium,high'],
             'user_id'     => ['nullable', 'exists:users,id'],
             'assigned_to' => ['required', 'exists:users,id'],
+            'attachments.*' => ['nullable', 'file', 'mimes:jpg,jpeg,png,log,txt,pdf,docx,xlsx', 'max:5120'],
         ];
     }
 }
