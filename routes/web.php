@@ -5,6 +5,19 @@ use App\Http\Controllers\UserController;
 use App\Mail\TicketCreated;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
+
+
+Route::get('/attachments/{filename}', function ($filename, Request $request) {
+    $path = 'attachments/' . $filename;
+
+    if (!Storage::disk('public')->exists($path)) {
+        abort(404);
+    }
+
+    return response()->download(storage_path('app/public/' . $path));
+});
+
 
 //Mail
 

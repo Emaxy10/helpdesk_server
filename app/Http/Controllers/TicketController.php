@@ -70,18 +70,86 @@ class TicketController extends Controller
         }
     }
 
-    public function show(Ticket $ticket){
-        return response()->json($ticket);
+   public function show(Ticket $ticket)
+{
+    // Decode the JSON field named 'attachment'
+    $attachments = [];
+    if (!empty($ticket->attachment)) {
+        $files = json_decode($ticket->attachment, true);
+
+        if (is_array($files)) {
+            $attachments = collect($files)->map(function ($file) {
+                return [
+                    'name' => basename($file),
+                    'url'  => url('attachments/' . basename($file)),
+                ];
+            })->toArray();
+        }
     }
 
+    $ticketData = [
+        'id'          => $ticket->id,
+        'title'       => $ticket->title,
+        'description' => $ticket->description,
+        'status'      => $ticket->status,
+        'priority'    => $ticket->priority,
+        'creator'     => $ticket->creator ? $ticket->creator->name : null,
+        'agent'       => $ticket->agent ? $ticket->agent->name : null,
+        'created_at'  => $ticket->created_at->format('Y-m-d H:i:s'),
+        'attachments' => $attachments, // ✅ renamed output key
 
-    public function index(){
-     $tickets = Ticket::with('creator')->with('agent')->get();
+    ];
 
-        return response()->json(
-            $tickets
-        );
+    return response()->json($ticketData);
+}
+
+
+
+    public function index()
+{
+    $tickets = Ticket::with(['creator', 'agent'])->get();
+
+    $ticketData = $tickets->map(function ($ticket) {
+        return [
+            'id'          => $ticket->id,
+            'title'       => $ticket->title,
+            'description' => $ticket->description,
+            'status'      => $ticket->status,
+            'priority'    => $ticket->priority,
+            'creator'     => $ticket->creator ? [
+                'id'   => $ticket->creator->id,
+                'name' => $ticket->creator->name,
+            ] : null,
+            'agent'       => $ticket->agent ? [
+                'id'   => $ticket->agent->id,
+                'name' => $ticket->agent->name,
+            ] : null,
+            'attachment'  => $ticket->attachment
+                ? $this->formatAttachmentUrl($ticket->attachment)
+                : null,
+            'created_at'  => $ticket->created_at ? $ticket->created_at->format('Y-m-d H:i:s') : null,
+        ];
+    });
+
+    return response()->json($ticketData);
+}
+
+/**
+ * Format attachment path to a full public URL
+ */
+private function formatAttachmentUrl($attachment)
+{
+    // Handle multiple attachments (JSON)
+    if (is_array(json_decode($attachment, true))) {
+        return collect(json_decode($attachment))->map(function ($file) {
+            return asset("storage/" . $file);
+        });
     }
+
+    // Handle single attachment
+    return asset("storage/" . $attachment);
+}
+
  
    public function accept(Ticket $ticket, Request $request)
 {
