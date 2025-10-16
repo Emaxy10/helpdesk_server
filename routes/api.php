@@ -4,10 +4,17 @@ use App\Http\Controllers\TicketController;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 
-// CSRF + session-based auth with Sanctum
-Route::middleware('web')->group(function () {
+
+// Public routes
+Route::middleware(['web'])->group(function () {
     Route::post('/register', [UserController::class, 'register']);
     Route::post('/login', [UserController::class, 'login']);
+});
+
+
+// CSRF + session-based auth with Sanctum
+Route::middleware(['web','auth:sanctum', 'role:admin,agent'])->group(function () {
+
     Route::post('/logout', [UserController::class, 'logout'])->middleware('auth:sanctum');
 
     Route::get('/user', function (\Illuminate\Http\Request $request) {
