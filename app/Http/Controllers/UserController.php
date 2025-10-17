@@ -28,6 +28,8 @@ class UserController extends Controller
                 'password'=> $request->password
             ]);
 
+            $user->assignRole('user');
+
             return response()->json([
                 'message' => 'Registered successfully',
                 'user' => $user,

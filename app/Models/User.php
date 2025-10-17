@@ -62,6 +62,25 @@ class User extends Authenticatable
         return false;
     }
 
+    public function assignRole($role){
+            // If $role is a string, find the Role model by name
+        if (is_string($role)) {
+            $role = Role::where('name', $role)->first();
+        }
+
+        // If role doesn't exist, return false or throw an exception
+        if (!$role) {
+            return false;
+        }
+
+        // Attach the role to the user if not already assigned
+        if (!$this->roles->contains($role->id)) {
+            $this->roles()->attach($role);
+        }
+
+        return $this;
+    }
+
     public function createdTickets() {
         return $this->hasMany(Ticket::class, 'user_id');
     }

@@ -12,6 +12,7 @@ Route::middleware(['web'])->group(function () {
 });
 
 
+
 // CSRF + session-based auth with Sanctum
 Route::middleware(['web','auth:sanctum', 'role:admin,agent'])->group(function () {
 
