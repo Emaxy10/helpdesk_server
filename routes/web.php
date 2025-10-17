@@ -54,13 +54,14 @@ Route::middleware(['web', 'auth:sanctum', 'role:admin,agent,user'])->group(funct
             $user->load('roles');
             return $user;    
     });
+    Route::get('/ticket', [TicketController::class, 'index']);
     Route::post('/logout', [UserController::class, 'logout']);
       Route::post('/ticket/create', [TicketController::class, 'store']);
 });
 
 // CSRF + session-based auth with Sanctum
 Route::middleware(['web','auth:sanctum', 'role:admin,agent'])->group(function () {
-    Route::get('/ticket', [TicketController::class, 'index']);
+   
     Route::patch('/ticket/{ticket}/update', [TicketController::class, 'update']);
     Route::get('/ticket/{ticket}', [TicketController::class, 'show']);
     Route::delete('/ticket/{ticket}', [TicketController::class, 'destroy']);

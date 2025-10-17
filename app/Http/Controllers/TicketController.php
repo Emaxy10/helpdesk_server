@@ -105,10 +105,26 @@ class TicketController extends Controller
 
 
 
-    public function index()
+ public function index()
 {
-    $tickets = Ticket::with(['creator', 'agent'])->get();
+    $user = Auth::user();
 
+    // Get user roles as an array of names
+    $roleNames = $user->roles->pluck('name')->map(fn($r) => strtolower($r))->toArray();
+
+    // Determine which tickets to return based on role
+    if (in_array('user', $roleNames)) {
+        // Regular users → only tickets they created
+        $tickets = $user->createdTickets()->with(['creator', 'agent'])->get();
+    } elseif (in_array('agent', $roleNames) || in_array('admin', $roleNames)) {
+        // Agents/Admins → all tickets
+        $tickets = Ticket::with(['creator', 'agent'])->get();
+    } else {
+        // Default: empty collection (no permission)
+        $tickets = collect();
+    }
+
+    // Format response data
     $ticketData = $tickets->map(function ($ticket) {
         return [
             'id'          => $ticket->id,
@@ -127,12 +143,16 @@ class TicketController extends Controller
             'attachment'  => $ticket->attachment
                 ? $this->formatAttachmentUrl($ticket->attachment)
                 : null,
-            'created_at'  => $ticket->created_at ? $ticket->created_at->format('Y-m-d H:i:s') : null,
+            'created_at'  => $ticket->created_at
+                ? $ticket->created_at->format('Y-m-d H:i:s')
+                : null,
         ];
     });
 
     return response()->json($ticketData);
 }
+
+
 
 /**
  * Format attachment path to a full public URL
