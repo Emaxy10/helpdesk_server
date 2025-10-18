@@ -123,10 +123,36 @@ class UserController extends Controller
 
     public function addAgent(Request $request)
     {
-        $user = User::findOrFail($request->user_id);
-        $user->roles()->syncWithoutDetaching([Role::where('name', 'agent')->first()->id]);
+        try{
+            $user = User::findOrFail($request->user_id);
+            $user->roles()->syncWithoutDetaching([Role::where('name', 'agent')->first()->id]);
 
-        return response()->json(['message' => 'User added as agent successfully.']);
+            return response()->json(['message' => 'User added as agent successfully.']);
+        }catch(Exception $e){
+            return response()->json([
+                'message' => 'An error Ocuured. Try again later',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+        
+    }
+
+    public function removeAgent($id)
+    {
+        try{
+            $user = User::findOrFail($id);
+            $agentRole = Role::where('name', 'agent')->first();
+
+            $user->roles()->detach($agentRole->id);
+
+            return response()->json(['message' => "{$user->name} removed as agent"]);
+        }catch(Exception $e){
+            return response()->json([
+                'message' => 'An error Ocuured. Try again later',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+        
     }
 
 }

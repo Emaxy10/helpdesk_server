@@ -73,6 +73,7 @@ Route::middleware(['web','auth:sanctum', 'role:admin,agent'])->group(function ()
 
     Route::get('/user/search/{search}',[UserController::class, 'search']);
     Route::post('/agent/add', [UserController::class, 'addAgent']);
+    Route::delete('/agent/remove/{id}', [UserController::class, 'removeAgent']);
 
     
 });
