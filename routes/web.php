@@ -71,5 +71,8 @@ Route::middleware(['web','auth:sanctum', 'role:admin,agent'])->group(function ()
     Route::patch('/ticket/{ticket}/transfer', [TicketController::class, 'transfer']);
     Route::patch('/ticket/{ticket}/close', [TicketController::class, 'close']);
 
+    Route::get('/user/search/{search}',[UserController::class, 'search']);
+    Route::post('/agent/add', [UserController::class, 'addAgent']);
+
     
 });

@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Exception;
 use Illuminate\Http\Request;
 use App\Models\User;
+use App\Models\Role;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\ValidationException;
 use Illuminate\Support\Facades\Auth;
@@ -109,6 +110,23 @@ class UserController extends Controller
             ], 500);
         }
       
+    }
+
+    public function search($search){
+        
+        $user = User::where('name', 'like', "%{$search}%")
+                ->orWhere('email', 'like', "%{$search}%")
+                ->first();
+
+            return response()->json($user);
+    }
+
+    public function addAgent(Request $request)
+    {
+        $user = User::findOrFail($request->user_id);
+        $user->roles()->syncWithoutDetaching([Role::where('name', 'agent')->first()->id]);
+
+        return response()->json(['message' => 'User added as agent successfully.']);
     }
 
 }
