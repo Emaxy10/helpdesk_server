@@ -1,11 +1,12 @@
 <?php
 
-use App\Http\Controllers\TicketController;
-use App\Http\Controllers\UserController;
+use App\Models\Ticket;
 use App\Mail\TicketCreated;
-use Illuminate\Support\Facades\Route;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Storage;
+use App\Http\Controllers\UserController;
+use App\Http\Controllers\TicketController;
 
 
 Route::get('/attachments/{filename}', function ($filename, Request $request) {
@@ -22,14 +23,9 @@ Route::get('/attachments/{filename}', function ($filename, Request $request) {
 //Mail
 
 Route::get('/test', function(){
-    // return new TicketCreated(); -> See the message in the mail
+    $ticket = Ticket::find(1);
 
-
-    // Mail::to('chigozieiroawula@outlook.com')->send(
-    //     new TicketCreated()
-    // );-> Send message with mail::to
-
-    // return 'done';
+    return new TicketCreated($ticket);
 
 });
 
