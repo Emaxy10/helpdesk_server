@@ -29,6 +29,7 @@ class UserController extends Controller
                 'password'=> $request->password
             ]);
 
+            //Assign role
             $user->assignRole('user');
 
             return response()->json([
@@ -57,12 +58,14 @@ class UserController extends Controller
             return response()->json([
                 'message' => 'Login successful',
                 'user' => Auth::user(),
+                'status' => 200
             ]);
         }
 
         return response()->json([
-            'message' => 'The provided credentials do not match our records.'
-        ], 401);
+            'message' => 'The provided credentials do not match our records.',
+            'status' => 401
+        ]);
     }
 
      public function logout(Request $request)

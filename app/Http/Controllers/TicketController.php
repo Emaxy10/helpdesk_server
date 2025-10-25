@@ -113,10 +113,12 @@ class TicketController extends Controller
     $roleNames = $user->roles->pluck('name')->map(fn($r) => strtolower($r))->toArray();
 
     // Determine which tickets to return based on role
-    if (in_array('user', $roleNames)) {
-        // Regular users → only tickets they created
-        $tickets = $user->createdTickets()->with(['creator', 'agent'])->get();
-    } elseif (in_array('agent', $roleNames) || in_array('admin', $roleNames)) {
+    // if (in_array('user', $roleNames)) {
+    //     // Regular users → only tickets they created
+    //     $tickets = $user->createdTickets()->with(['creator', 'agent'])->get();
+    // } else
+    
+    if(in_array('agent', $roleNames) || in_array('admin', $roleNames)) {
         // Agents/Admins → all tickets
         $tickets = Ticket::with(['creator', 'agent'])->get();
     } else {
