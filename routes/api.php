@@ -5,12 +5,18 @@ use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 
 
+// --------------------
 // Public routes
-Route::middleware(['web'])->group(function () {
-    Route::post('/register', [UserController::class, 'register']);
-    Route::post('/login', [UserController::class, 'login']);
-});
+// --------------------
+Route::post('/login', [UserController::class, 'login']);
+Route::post('/register', [UserController::class, 'register']);
 
+// --------------------
+// Sanctum CSRF cookie endpoint (handled by Sanctum automatically)
+// --------------------
+Route::get('/sanctum/csrf-cookie', function () {
+    return response()->noContent();
+});
 
 
 // CSRF + session-based auth with Sanctum

@@ -45,29 +45,37 @@ class UserController extends Controller
     }
 
   public function login(Request $request)
-    {
-        $request->validate([
-            'email' => 'required|email',
-            'password' => 'required',
-        ]);
+{
+    $request->validate([
+        'email' => 'required|email',
+        'password' => 'required',
+    ]);
 
-        // Use Auth::attempt for session-based login
-        if (Auth::attempt($request->only('email', 'password'))) {
-            $request->session()->regenerate(); // Important for session security
-            
+    try {
+        if (!Auth::attempt($request->only('email', 'password'))) {
             return response()->json([
-                'message' => 'Login successful',
-                'user' => Auth::user(),
-                'status' => 200
+                'message' => 'Invalid credentials.',
+                'status' => 401
             ]);
         }
 
-        return response()->json([
-            'message' => 'The provided credentials do not match our records.',
-            'status' => 401
-        ]);
-    }
+        
+        $user = Auth::user();
+        $token = $user->createToken('api_token')->plainTextToken;
 
+        return response()->json([
+            'message' => 'Login successful',
+            'user' => $user,
+            'token' => $token,
+            'status' => 200
+        ]);
+    } catch (Exception $e) {
+        return response()->json([
+            'message' => 'An error occurred. Try again later.',
+            'error' => $e->getMessage(),
+        ], 500);
+    }
+}
      public function logout(Request $request)
     {
         Auth::guard('web')->logout();
