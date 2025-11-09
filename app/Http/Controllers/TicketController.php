@@ -218,7 +218,18 @@ private function formatAttachmentUrl($attachment)
 
     public function myTickets(){
         $user = Auth::user();
-        $tickets = $user->createdTickets()->with('agent')->get();
+
+        // Normalize roles (handle both array or collection)
+        $roles = is_array($user->roles)
+        ? $user->roles
+        : $user->roles->pluck('name')->toArray();
+
+        if(in_array("agent", $roles)){
+            $tickets = $user->assignedTickets()->with('creator')->get();
+        }elseif(in_array("user", $roles)){
+            $tickets = $user->createdTickets()->with('agent')->get();
+        }
+        
 
         return response()->json($tickets);
 
