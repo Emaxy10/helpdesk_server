@@ -63,6 +63,8 @@ class UserController extends Controller
         $user = Auth::user();
         $token = $user->createToken('api_token')->plainTextToken;
 
+        $user->roles;
+
         return response()->json([
             'message' => 'Login successful',
             'user' => $user,

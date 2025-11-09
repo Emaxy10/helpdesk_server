@@ -188,6 +188,12 @@ private function formatAttachmentUrl($attachment)
             'message' => 'Unauthorized: Only the assigned agent can accept this ticket.'
         ], 403);
         }
+
+        if($ticket->is_accepted !== null){
+            return response()->json([
+            'message' => 'Fail:Ticket already accepted.'
+            ], 403);
+        }
         
         $ticket->update([
             'is_accepted' => 1,
