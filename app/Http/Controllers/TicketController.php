@@ -17,8 +17,8 @@ use Illuminate\Http\Request;
 class TicketController extends Controller
 {
     //
-  public function store(StoreTicketRequest $request)
-{
+    public function store(StoreTicketRequest $request)
+    {
     $user = Auth::user();
 
     $paths = [];
@@ -35,14 +35,16 @@ class TicketController extends Controller
         'status'      => $request->status ?? 'open',
         'priority'    => $request->priority,
         'user_id'     => $user->id,
+        'is_accepted'=> false,
+        'is_completed'=> false,
         'assigned_to' => $request->assigned_to,
         'attachment' => $paths ? json_encode($paths) : null,
     ]);
 
     //Send Mail
-    Mail::to($user)->send(
-        new TicketCreated($ticket)
-    );
+    // Mail::to($user)->send(
+    //     new TicketCreated($ticket)
+    // );
 
     return response()->json([
         'ticket'  => $ticket,
