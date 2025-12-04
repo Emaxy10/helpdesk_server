@@ -15,10 +15,10 @@ Route::post('/register', [UserController::class, 'register']);
 
 // --------------------
 // Sanctum CSRF cookie endpoint (handled by Sanctum automatically)
-// --------------------
-Route::get('/sanctum/csrf-cookie', function () {
-    return response()->noContent();
-});
+// // --------------------
+// Route::get('/sanctum/csrf-cookie', function () {
+//     return response()->noContent();
+// });
 
 Route::middleware(['auth:sanctum'])->get('/user', function (Request $request) {
      $user =$request->user();
