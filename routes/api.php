@@ -13,12 +13,28 @@ Route::post('/register', [UserController::class, 'register']);
 
 
 
-// --------------------
-// Sanctum CSRF cookie endpoint (handled by Sanctum automatically)
-// // --------------------
-// Route::get('/sanctum/csrf-cookie', function () {
-//     return response()->noContent();
-// });
+Route::get('/attachments/{filename}', function ($filename, Request $request) {
+    $path = 'attachments/' . $filename;
+
+    if (!Storage::disk('public')->exists($path)) {
+        abort(404);
+    }
+
+    return response()->download(storage_path('app/public/' . $path));
+});
+
+
+//Mail
+
+Route::get('/test', function(){
+    $ticket = Ticket::find(1);
+
+    return new TicketCreated($ticket);
+
+});
+
+
+
 
 Route::middleware(['auth:sanctum'])->get('/user', function (Request $request) {
      $user =$request->user();
